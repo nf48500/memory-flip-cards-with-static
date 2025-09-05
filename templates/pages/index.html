@@ -1,0 +1,78 @@
+{% load static  %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Memory Flip Cards Game</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}"/>
+</head>
+<body>
+<h1>🃏 Memory Flip Cards</h1>
+<div class="board" id="board"></div>
+<button onclick="restartGame()">Restart Game</button>
+
+<script>
+const board = document.getElementById('board');
+let cards = [];
+let flipped = [];
+let matched = 0;
+
+function initGame() {
+  const symbols = ['🍎','🍌','🍇','🍉','🍒','🥝','🍍','🥭'];
+  let deck = [...symbols, ...symbols]; // double symbols
+  deck.sort(() => 0.5 - Math.random()); // shuffle
+
+  board.innerHTML = '';
+  cards = [];
+  flipped = [];
+  matched = 0;
+
+  deck.forEach((symbol) => {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.textContent = '';
+    card.dataset.symbol = symbol;
+    card.addEventListener('click', () => flipCard(card));
+    board.appendChild(card);
+    cards.push(card);
+  });
+}
+
+function flipCard(card){
+  if(card.classList.contains('flipped') || flipped.length === 2) return;
+  card.classList.add('flipped');
+  card.textContent = card.dataset.symbol;
+  flipped.push(card);
+
+  if(flipped.length === 2){
+    setTimeout(() => checkMatch(), 800);
+  }
+}
+
+function checkMatch(){
+  const [a, b] = flipped;
+  if(a.dataset.symbol === b.dataset.symbol){
+    matched +=2;
+    a.style.background = '#28a745';
+    b.style.background = '#28a745';
+  } else {
+    a.classList.remove('flipped');
+    b.classList.remove('flipped');
+    a.textContent = '';
+    b.textContent = '';
+  }
+  flipped = [];
+
+  if(matched === cards.length){
+    setTimeout(()=> alert('🎉 You won!'), 300);
+  }
+}
+
+function restartGame(){
+  initGame();
+}
+
+initGame();
+</script>
+</body>
+</html>
